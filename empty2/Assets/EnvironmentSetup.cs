@@ -192,7 +192,6 @@ public class EnvironmentSetup : MonoBehaviour
 
         if (!open)
         {
-            enableRainDisturb = false;
             Shader.SetGlobalFloat("_DisturbMapFactor", 0.0f);
             Shader.SetGlobalFloat("_RefLerp", 0);
         }
@@ -200,7 +199,11 @@ public class EnvironmentSetup : MonoBehaviour
     public void UpdateRainDisturb()
     {
         if (!enableRainDisturb)
+        {
+            Shader.SetGlobalFloat("_DisturbMapFactor", 0.0f);
+            Shader.SetGlobalFloat("_RefLerp", 0);
             return;
+        }
         if(rainDisturbTex != null && rainDisturbTex.Length > frameIndex)
         {
             OpenWetEffect(true);
