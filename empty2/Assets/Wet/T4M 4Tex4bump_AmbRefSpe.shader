@@ -9,13 +9,13 @@ Properties {
     _MinShadowInt("Min Shadow Intensity",Range(0,1)) =0.5
     _BakeLight("_BakeLight XYZ:Direction,W:Intensity",Vector) =(0.2,1,0.2,1.5)
 	_ShininessL0 ("Layer1Shininess", Range (0.03, 1)) = 0.2
-	_Splat0 ("Layer 1 (R)", 2D) = "white" {}
+	[NoScaleOffset]_Splat0 ("Layer 1 (R)", 2D) = "white" {}
 	_ShininessL1 ("Layer2Shininess", Range (0.03, 1)) = 0.2
-	_Splat1 ("Layer 2 (G)", 2D) = "white" {}
+	[NoScaleOffset]_Splat1 ("Layer 2 (G)", 2D) = "white" {}
 	_ShininessL2 ("Layer3Shininess", Range (0.03, 1)) = 0.2
-	_Splat2 ("Layer 3 (B)", 2D) = "white" {}
+	[NoScaleOffset]_Splat2 ("Layer 3 (B)", 2D) = "white" {}
 	_ShininessL3 ("Layer4Shininess", Range (0.03, 1)) = 0.2
-	_Splat3 ("Layer 4 (A)", 2D) = "white" {}
+	[NoScaleOffset]_Splat3 ("Layer 4 (A)", 2D) = "white" {}
     _BumpSplat0 ("Layer1Normalmap", 2D) = "bump" {}
 	_BumpSplat1 ("Layer2Normalmap", 2D) = "bump" {}
 	_BumpSplat2 ("Layer3Normalmap", 2D) = "bump" {}
@@ -27,6 +27,7 @@ Properties {
 	_Tiling2("Layer3:xy,Layer4:zw", Vector)=(1,1,1,1)
 	_Control ("Control (RGBA)", 2D) = "white" {}
     _RefMap ("Reflection Map(R for Refletion Mask)",2D) = "white" {}
+	_OwnDisturbFactorFactor("Object's Factor",Range(0,1)) = 1.0
     _WetColor ("Wet Area Color", Color) = (0.2, 0.2,0.2, 1)
     //_RefLerp("Reflect Lerp",Range(0,1))=0.0
     _ReflectVal("Reflect Value",Range(0,1)) = 0.5
@@ -41,7 +42,7 @@ CGINCLUDE
     sampler2D _BumpSplat0, _BumpSplat1, _BumpSplat2, _BumpSplat3;
     sampler2D _Splat0,_Splat1,_Splat2,_Splat3;
     fixed4 _ReflectColor,_WetColor;
-    fixed _AmbScale,_ReflectVal,_RefLerp,_RefFluseVal,_DisturbMapFactor,_DisturbTilling;
+    fixed _AmbScale,_ReflectVal,_RefLerp,_RefFluseVal,_DisturbMapFactor,_DisturbTilling,_OwnDisturbFactorFactor;
     fixed _ShininessL0;
     fixed _ShininessL1;
     fixed _ShininessL2;
@@ -133,7 +134,7 @@ SubShader {
 			//half3 disturbMap =UnpackNormal(tex2D(_DisturbMap,IN.uv_Control *_DisturbTilling+ bump1 * bump2));
 			half3 disturbMap =UnpackNormal(tex2D(_DisturbMap,IN.uv_Control *_DisturbTilling));
 			//o.Normal =lerp(o.Normal,o.Normal *disturbMap,_DisturbMapFactor);   
-			half3 disturbNor =lerp(o.Normal,o.Normal *disturbMap,_DisturbMapFactor);   
+			half3 disturbNor =lerp(o.Normal,o.Normal *disturbMap,_DisturbMapFactor*_OwnDisturbFactorFactor);   
 
             //50% darker in wet area
             half darkValue =lerp(0.5,1.0,IN.viewDirRim.y);
