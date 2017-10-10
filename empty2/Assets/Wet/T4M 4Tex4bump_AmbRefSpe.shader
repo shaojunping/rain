@@ -27,7 +27,7 @@ Properties {
 	_Tiling2("Layer3:xy,Layer4:zw", Vector)=(1,1,1,1)
 	_Control ("Control (RGBA)", 2D) = "white" {}
     _RefMap ("Reflection Map(R for Refletion Mask)",2D) = "white" {}
-	_OwnDisturbFactorFactor("Object's Factor",Range(0,1)) = 1.0
+	_OwnDisturbFactorFactor("Object's Rain Normal Factor",Range(0,1)) = 1.0
     _WetColor ("Wet Area Color", Color) = (0.2, 0.2,0.2, 1)
     //_RefLerp("Reflect Lerp",Range(0,1))=0.0
     _ReflectVal("Reflect Value",Range(0,1)) = 0.5
