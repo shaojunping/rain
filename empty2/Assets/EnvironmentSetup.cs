@@ -44,6 +44,11 @@ public class EnvironmentSetup : MonoBehaviour
     // Use this for initialization
     void OnEnable()
     {
+        OpenRainDisturb(enableRainDisturb);
+        OpenHeightFog(enableFogHeight);
+        OpenAmbientEffect(enableAmbient);
+        OpenWetEffect(enableWet);
+        OpenSnowEffect(enableSnow);
     }
 
     //note： if rain effect is opened, it should be updated each frame
