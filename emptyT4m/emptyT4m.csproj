@@ -76,7 +76,6 @@
     <Compile Include="Assets\Scripts\ArtScripts\showFPS.cs" />
     <Compile Include="Assets\Scripts\CameraSetup.cs" />
     <Compile Include="Assets\Scripts\EnvironmentSetup.cs" />
-    <Compile Include="Assets\Scripts\RendererInforLM.cs" />
     <Compile Include="Assets\Scripts\WeaponTrail\Spline.cs" />
     <Compile Include="Assets\Scripts\WeaponTrail\SplineControlPoint.cs" />
     <Compile Include="Assets\Scripts\WeaponTrail\VertexPool.cs" />
@@ -103,14 +102,17 @@
     <Compile Include="Assets\toogleWet.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Assets\Shaders\Scenes\Snow\SceneCommonLOD_Snow.shader" />
     <None Include="Assets\Shaders\Scenes\Wet\SceneCommonLOD_RealRef.shader" />
     <None Include="Assets\Shaders\Scenes\Wet\SpecularWet-Base.shader" />
     <None Include="Assets\Shaders\Scenes\Wet\SpecularWetArea-AddPass.shader" />
     <None Include="Assets\Shaders\Scenes\Wet\SpecularWetArea-FirstPass.shader" />
     <None Include="Assets\Shaders\Scenes\Wet\T4M 4Tex4bump_AmbRefSpe.shader" />
     <None Include="Assets\Shaders\Scenes\Wet\T4MAddSpe.cginc" />
+    <None Include="Assets\Shaders\Scenes\Wet\TerrainSplatmapWetArea.cginc" />
     <None Include="Assets\Shaders\Scenes\Wet\testSurfaceShader.shader" />
     <None Include="Assets\Shaders\Scenes\Wet\testWorldRefl.shader" />
+    <None Include="Assets\Skybox2Layer\Skybox_2Layers.shader" />
     <None Include="Assets\Standard Assets\Effects\Bloom\Resources\Bloom.shader" />
     <None Include="Assets\Standard Assets\Effects\ImageEffects\Shaders\BlendModesOverlay.shader" />
     <None Include="Assets\Standard Assets\Effects\ImageEffects\Shaders\BlurEffectConeTaps.shader" />
