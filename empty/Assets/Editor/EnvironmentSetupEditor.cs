@@ -4,28 +4,50 @@ using UnityEditor;
 using UnityEngine;
 
   [CustomEditor(typeof(EnvironmentSetup))]
-public class HeightFogEditor : Editor
+public class HeightFogEditor : CustomEditorBase
 {
+
     private SerializedObject serObj;
-    private SerializedProperty fogHeiStart;
-    private SerializedProperty fogHeiEnd;
-    private SerializedProperty fogTexture;
-    //private SerializedProperty fogGradientColor;
+
+    #region SerializedProperties
+
+    //fog
+    private SerializedProperty fogHeightStart;
+    private SerializedProperty fogHeightEnd;
+    private SerializedProperty fogEnable;
+
+    //ambient weather color
     private SerializedProperty ambScale;
     private SerializedProperty ambCol;
-    private SerializedProperty ambWeather;
-    private SerializedProperty wetVal;
+    private SerializedProperty ambEnable;
 
+    //wet
+    private SerializedProperty wetVal;
+    private SerializedProperty wetEnable;
+
+    //snow
     private SerializedProperty snowLevel;
     private SerializedProperty snowTex;
+    private SerializedProperty enableSnow;
 
-    private SerializedProperty LMpro;
-    private SerializedProperty LMtex;
+    //day and night change
+    //private SerializedProperty LMpro;
+    //private SerializedProperty LMtex;
 
-    private SerializedProperty RDtex;
-    private SerializedProperty enableRD;
+    //rain
+    private SerializedProperty RainDisturbTex;
+    private SerializedProperty enableRainDisturb;
     private SerializedProperty intervalTime;
     private SerializedProperty disturbFactor;
+    #endregion SerializedProperty
+
+    #region foldouts
+    bool _fogFoldout;
+    bool _ambientFoldout;
+    bool _wetFoldout;
+    bool _snowFoldout;
+    bool _rainFoldout;
+    #endregion foldouts
 
     EnvironmentSetup cls;
 
@@ -34,109 +56,112 @@ public class HeightFogEditor : Editor
           serObj = new SerializedObject(target);
           cls = (EnvironmentSetup)target;
 
-          fogHeiStart = serObj.FindProperty("FogHeightStart");
-          fogHeiEnd = serObj.FindProperty("FogHeightEnd");
-          fogTexture = serObj.FindProperty("FogTexture");
-          //fogGradientColor = serObj.FindProperty("GradientFogColor");
-          ambScale = serObj.FindProperty("ambientEffectScale");
-          ambCol = serObj.FindProperty("newAmbCol");
-          ambWeather= serObj.FindProperty("weatherAmbient");
-          wetVal = serObj.FindProperty("wetEffect");
-          snowLevel = serObj.FindProperty("SnowLevel");
-          snowTex = serObj.FindProperty("SnowTex");
+        //fog
+        fogHeightStart = serObj.FindProperty("FogHeightStart");
+        fogHeightEnd = serObj.FindProperty("FogHeightEnd");
+        fogEnable = serObj.FindProperty("enableFogHeight");
 
-          LMpro = serObj.FindProperty("LMLerp");
-          LMtex = serObj.FindProperty("SecondLMTex");
+        //ambient
+        ambScale = serObj.FindProperty("ambientEffectScale");
+        ambCol = serObj.FindProperty("newAmbCol");
+        ambEnable = serObj.FindProperty("enableAmbient");
 
-          RDtex = serObj.FindProperty("rainDisturbTex");
-          enableRD = serObj.FindProperty("enableRainDisturb");
-          intervalTime = serObj.FindProperty("intervalTime");
-          disturbFactor = serObj.FindProperty("disturbFactor");
-      }
-      public override void OnInspectorGUI()
+        //wet
+        wetVal = serObj.FindProperty("wetEffect");
+        wetEnable = serObj.FindProperty("enableWet");
+
+        //snow
+        snowLevel = serObj.FindProperty("SnowLevel");
+        snowTex = serObj.FindProperty("SnowTex");
+        enableSnow = serObj.FindProperty("enableSnow");
+
+        //rain
+        RainDisturbTex = serObj.FindProperty("rainDisturbTex");
+        enableRainDisturb = serObj.FindProperty("enableRainDisturb");
+        intervalTime = serObj.FindProperty("intervalTime");
+        disturbFactor = serObj.FindProperty("disturbFactor");
+    }
+
+
+    private void OnFogGUI()
+    {
+        _fogFoldout = EditorGUILayout.Foldout(_fogFoldout, "Height Fog");
+        if (_fogFoldout)
+        {
+            EditorGUILayout.PropertyField(fogEnable, new GUIContent("Enable Fog Height"));
+            EditorGUILayout.PropertyField(fogHeightStart, new GUIContent("FogHeightStart"));
+            EditorGUILayout.PropertyField(fogHeightEnd, new GUIContent("FogHeightEnd"));
+            if (cls.FogHeightStart > cls.FogHeightEnd)
+                cls.FogHeightStart = cls.FogHeightEnd;
+        }
+    }
+
+    private void OnAmbientGUI()
+    {
+        _ambientFoldout = EditorGUILayout.Foldout(_ambientFoldout, "Ambient");
+        if (_ambientFoldout)
+        {
+            EditorGUILayout.PropertyField(ambEnable, new GUIContent("Amb Changed by Weather"));
+            EditorGUILayout.PropertyField(ambScale, new GUIContent("Ambient Effect Scale"));
+            EditorGUILayout.PropertyField(ambCol, new GUIContent("Ambient Sky Color"));
+        }
+    }
+
+    private void OnWetGUI()
+    {
+        _wetFoldout = EditorGUILayout.Foldout(_wetFoldout, "Wet");
+        if (_wetFoldout)
+        {
+            EditorGUILayout.PropertyField(wetEnable, new GUIContent("Wet Enable"));
+            EditorGUILayout.PropertyField(wetVal, new GUIContent("Wet Effect"));
+        }
+    }
+
+    private void OnSnowGUI()
+    {
+        _snowFoldout = EditorGUILayout.Foldout(_snowFoldout, "Snow");
+        if(_snowFoldout)
+        {
+            EditorGUILayout.PropertyField(enableSnow, new GUIContent("Snow Enable"));
+
+            EditorGUILayout.PropertyField(snowLevel, new GUIContent("Snow Effect"));
+            EditorGUILayout.PropertyField(snowTex, new GUIContent("Snow Texture"));
+        }
+    }
+
+    private void OnRainGUI()
+    {
+        _rainFoldout = EditorGUILayout.Foldout(_rainFoldout, "Rain");
+        if (_rainFoldout)
+        {
+            EditorGUILayout.PropertyField(enableRainDisturb, new GUIContent("Enable Rain Disturb"));
+            EditorGUILayout.PropertyField(intervalTime, new GUIContent("Disturb interval Time"));
+            EditorGUILayout.PropertyField(disturbFactor, new GUIContent("Disturb disturb factor"));
+            EditorGUILayout.PropertyField(RainDisturbTex, true);
+        }
+    }
+
+    public override void OnInspectorGUI()
       {
           serObj.Update();
           EditorGUI.BeginChangeCheck();
-
-          EditorGUILayout.PropertyField(fogHeiStart, new GUIContent("FogHeightStart"));
-          EditorGUILayout.PropertyField(fogHeiEnd, new GUIContent("FogHeightEnd"));
-         
-          //EditorGUILayout.PropertyField(fogGradientColor, new GUIContent("GradientFogColor"));
-          //if(cls.GradientFogColor.maxColorComponent>0.01f)
-          //    EditorGUILayout.PropertyField(fogTexture, new GUIContent("GradientFogTexture"));
-          EditorGUILayout.PropertyField(ambWeather, new GUIContent("Amb Changed by Weather"));
-          EditorGUILayout.PropertyField(ambScale, new GUIContent("Ambient Effect Scale"));
-          EditorGUILayout.PropertyField(ambCol, new GUIContent("Ambient Sky Color"));
-
-          EditorGUILayout.PropertyField(wetVal, new GUIContent("Wet Effect"));
-
-          EditorGUILayout.PropertyField(snowLevel, new GUIContent("Snow Effect"));
-          EditorGUILayout.PropertyField(snowTex, new GUIContent("Snow Texture"));
-
-          EditorGUILayout.PropertyField(LMpro, new GUIContent("Lightmap Lerp"));
-          EditorGUILayout.PropertyField(LMtex, true);
-
-          EditorGUILayout.PropertyField(enableRD, new GUIContent("Enable Rain Disturb"));
-          EditorGUILayout.PropertyField(intervalTime, new GUIContent("Disturb interval Time"));
-          EditorGUILayout.PropertyField(disturbFactor, new GUIContent("Disturb disturb factor"));
-          EditorGUILayout.PropertyField(RDtex, true);
-
-          if (cls.FogHeightStart > cls.FogHeightEnd)
-              cls.FogHeightStart = cls.FogHeightEnd;
-
-          if (EditorGUI.EndChangeCheck())
-          {
-              float FogHeiParaZ = 1 / (cls.FogHeightEnd - cls.FogHeightStart);
-              float FogHeiParaW = -cls.FogHeightStart / (cls.FogHeightEnd - cls.FogHeightStart);
-              Shader.SetGlobalFloat("_FogHeiParaZ", FogHeiParaZ);
-              Shader.SetGlobalFloat("_FogHeiParaW", FogHeiParaW);
-              //Shader.SetGlobalTexture("_FogTex", cls.FogTexture);
-              //Shader.SetGlobalColor("_GradientFogColor", cls.GradientFogColor);
-
-              //Important:LinearSpace!!
-              //Shader.SetGlobalFloat("_RefLerp", Mathf.GammaToLinearSpace(cls.wetArea));
-              Shader.SetGlobalFloat("_RefLerp", cls.wetEffect);
-            
-              RenderSettings.ambientSkyColor = cls.newAmbCol;
-
-              Shader.SetGlobalFloat("_SnowLevel", Mathf.GammaToLinearSpace(cls.SnowLevel));
-              Shader.SetGlobalTexture("_FogTex", cls.SnowTex);
-              if (cls.weatherAmbient)
-              {
-                  if (cls.wetEffect > 0.0f && cls.SnowLevel == 0.0f)
-                      Shader.SetGlobalFloat("_AmbScale", cls.ambientEffectScale * cls.wetEffect);
-                  else
-                      if (cls.SnowLevel > 0.0f && cls.wetEffect == 0.0f)
-                          Shader.SetGlobalFloat("_AmbScale", cls.ambientEffectScale * cls.SnowLevel);
-              }
-                else
-                {
-                    Shader.SetGlobalFloat("_AmbScale", cls.ambientEffectScale);
-                }
-
-
-            //cls.
-              //if (cls.LMLerp >= 0.01f && cls.LMLerp <= 0.99f)
-              //{
-              //    Shader.EnableKeyword("_BOTHLM");
-              //    Shader.DisableKeyword("_DAYLM");
-              //    Shader.DisableKeyword("_NIGHTLM");
-              //}
-              //if (cls.LMLerp < 0.01f)
-              //{
-              //    Shader.EnableKeyword("_DAYLM");
-              //    Shader.DisableKeyword("_BOTHLM");
-              //    Shader.DisableKeyword("_NIGHTLM");
-              //}
-              //if (cls.LMLerp > 0.99f)
-              //{
-              //    Shader.EnableKeyword("_NIGHTLM");
-              //    Shader.DisableKeyword("_BOTHLM");
-              //    Shader.DisableKeyword("_DAYLM");
-              //}
-              Shader.SetGlobalFloat("_LMLerp", cls.LMLerp);
-          }
+          OnFogGUI();
+          OnAmbientGUI();
+          OnWetGUI();
+          OnSnowGUI();
+          OnRainGUI();
 
           serObj.ApplyModifiedProperties();
-      }
+        if (EditorGUI.EndChangeCheck())
+        {
+            float FogHeiParaZ = 1 / (cls.FogHeightEnd - cls.FogHeightStart);
+            float FogHeiParaW = -cls.FogHeightStart / (cls.FogHeightEnd - cls.FogHeightStart);
+            cls.SetHeightFog(FogHeiParaZ, FogHeiParaW);
+            cls.OpenHeightFog(cls.enableFogHeight);
+            cls.OpenAmbientEffect(cls.enableAmbient);
+            cls.OpenRainDisturb(cls.enableRainDisturb);
+            cls.OpenWetEffect(cls.enableWet);
+            cls.OpenSnowEffect(cls.enableSnow);
+        }
+    }
 }
