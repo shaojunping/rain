@@ -211,7 +211,7 @@ public class EnvironmentSetup : MonoBehaviour
         }
         if(rainDisturbTex != null && rainDisturbTex.Length > frameIndex)
         {
-            OpenWetEffect(true);
+            //OpenWetEffect(true);
             Shader.SetGlobalTexture("_DisturbMap", rainDisturbTex[frameIndex]);
             Shader.SetGlobalFloat("_DisturbMapFactor", disturbFactor);
             countTime += Time.deltaTime;

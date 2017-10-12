@@ -92,7 +92,7 @@ Shader "TSHD/Scene/Snow/SceneCommonLOD_Snow"
 
              //50% darker in wet area
             half darkValue =lerp(0.5,1.0,IN.viewDirRim.y);
-            refMask *=_ReflectVal;
+            refMask *= _ReflectVal;
             o.Gloss =lerp(o.Gloss,o.Gloss*(darkValue-0.3),refMask);
             c.rgb =lerp(c.rgb,c.rgb *darkValue*_WetColor, refMask);
 
