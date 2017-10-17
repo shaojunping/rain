@@ -141,6 +141,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\Shaders\Scenes\Snow\SceneCommonLOD_Snow.shader" />
+    <None Include="Assets\Shaders\Scenes\Wet\SceneCommonLODLight.shader" />
     <None Include="Assets\Shaders\Scenes\Wet\SceneCommonLOD_RealRef.shader" />
     <None Include="Assets\Shaders\Scenes\Wet\SpecularWet-Base.shader" />
     <None Include="Assets\Shaders\Scenes\Wet\SpecularWetArea-AddPass.shader" />
