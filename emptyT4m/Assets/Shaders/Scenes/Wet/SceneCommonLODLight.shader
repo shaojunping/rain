@@ -10,7 +10,7 @@ Shader "TSHD/Scene/Wet/SceneCommonLODLight"
 	Properties
 	{
         //_AmbScale ("Ambient Color", Range (0.0, 1)) = 0
-		_MainTex ("Main Texture", 2D) = "white" {}
+		_MainTex ("Main Texture, A for rain disturb", 2D) = "white" {}
 		_MainColor ("Main Color", Color) = (1.0, 1.0, 1.0, 1)
 		_MainColorScale ("Main Color Scale", Range (0.0, 1)) = 0
         _NorFactor("Baked Normal Factor",Range(0, 0.5)) =0.0
@@ -59,6 +59,7 @@ Shader "TSHD/Scene/Wet/SceneCommonLODLight"
 	        float2 uv_MainTex;
 	        float2 uv_BumpMap;
 	        float3 worldRefl;
+			float3 worldNormal;
             half2 viewDirRim;
 	        INTERNAL_DATA
             float2 fogCoord : TEXCOORD5;
@@ -113,14 +114,14 @@ Shader "TSHD/Scene/Wet/SceneCommonLODLight"
 	        o.Specular = _Shininess;
 
             o.Normal = UnpackScaleNormal(tex2D(_BumpMap, IN.uv_BumpMap),_BumpScale);
-
-			half rainScale = max(0, dot(o.Normal, half3(0, 1, 0)) + 0.5);
+			//half rainScale = tex2D(_BumpMap, IN.uv_BumpMap).a;
+			//half rainScale = max(0, dot(o.Normal, half3(0, 1, 0)) + 0.5);
 
 			half3 disturbMap = tex2D(_DisturbMap, IN.uv_BumpMap * _DisturbTilling);
-			half3 disturbNor =lerp(o.Normal,o.Normal * disturbMap, _DisturbMapFactor * _OwnRainNormalFactor * (1 - rainScale));
+			half3 disturbNor =lerp(o.Normal,o.Normal * disturbMap, _DisturbMapFactor * _OwnRainNormalFactor * c.a);
 
 			//o.Normal = half3(1.0, 1.0, 1.0);
-            half refMask =saturate( speCol.a -IN.viewDirRim.y) ;
+            half refMask =saturate( speCol.a - IN.viewDirRim.y);
             //// we make normal of wet to be flat
             half3 tempNor =lerp(o.Normal,half3(0,0,1),_RefFluseVal);
             o.Normal =lerp(o.Normal,tempNor,refMask);    
