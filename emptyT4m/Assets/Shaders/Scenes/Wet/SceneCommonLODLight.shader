@@ -114,8 +114,10 @@ Shader "TSHD/Scene/Wet/SceneCommonLODLight"
 
             o.Normal = UnpackScaleNormal(tex2D(_BumpMap, IN.uv_BumpMap),_BumpScale);
 
+			half rainScale = max(0, dot(o.Normal, half3(0, 1, 0)) + 0.5);
+
 			half3 disturbMap = tex2D(_DisturbMap, IN.uv_BumpMap * _DisturbTilling);
-			half3 disturbNor =lerp(o.Normal,o.Normal * disturbMap, _DisturbMapFactor * _OwnRainNormalFactor);
+			half3 disturbNor =lerp(o.Normal,o.Normal * disturbMap, _DisturbMapFactor * _OwnRainNormalFactor * (1 - rainScale));
 
 			//o.Normal = half3(1.0, 1.0, 1.0);
             half refMask =saturate( speCol.a -IN.viewDirRim.y) ;
