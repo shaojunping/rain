@@ -68,9 +68,9 @@ SubShader {
     struct Input {
         float3 worldRefl;
         half2 viewDirRim;
+		float4 screenPos;
 	    float2 uv_Control : TEXCOORD0;
 		float3 worldPos;
-		//float2 uv_DisturbMap : TEXCOORD1;
         INTERNAL_DATA
     };
 
@@ -151,6 +151,12 @@ SubShader {
 			half3 worldRefl = WorldReflectionVector (IN, disturbNor);
             half4 skyData = UNITY_SAMPLE_TEXCUBE(unity_SpecCube0, worldRefl);// use ref probe as reflection source
             half3 reflcol=DecodeHDR(skyData, unity_SpecCube0_HDR);
+
+			//realtime reflection
+            half4 projTC = UNITY_PROJ_COORD(IN.screenPos);                
+            half4 reflection2 = tex2Dproj(_ReflectionTex, projTC);
+            reflcol =lerp(reflcol,reflection2.rgb,reflection2.a);  
+
             refMask *= IN.viewDirRim.x;
             reflcol.rgb *= refMask;
             o.Emission = reflcol.rgb ;
