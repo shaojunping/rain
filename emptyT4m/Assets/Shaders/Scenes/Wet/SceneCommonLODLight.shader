@@ -70,8 +70,8 @@ Shader "TSHD/Scene/Wet/SceneCommonLODLight"
             UNITY_INITIALIZE_OUTPUT(Input,o);
             half3 worldNormal = UnityObjectToWorldNormal(v.normal);
             float3 worldPos = mul(unity_ObjectToWorld, v.vertex).xyz;
-            half3 worldViewDir = normalize(UnityWorldSpaceViewDir(worldPos)  +  _WorldSpaceLightPos0.xyz  );
-            o.viewDirRim.x = saturate(1.4f -saturate(dot(worldViewDir , worldNormal)) );
+            half3 worldHalfDir = normalize(UnityWorldSpaceViewDir(worldPos)  +  _WorldSpaceLightPos0.xyz  );
+            o.viewDirRim.x = saturate(1.4f -saturate(dot(worldHalfDir , worldNormal)) );
             o.viewDirRim.y =1 - _RefLerp;
             float4 pos = mul (UNITY_MATRIX_MVP, v.vertex);
             #if defined(FOG_LINEAR)
@@ -116,15 +116,14 @@ Shader "TSHD/Scene/Wet/SceneCommonLODLight"
             o.Normal = UnpackScaleNormal(tex2D(_BumpMap, IN.uv_BumpMap),_BumpScale);
 			//half rainScale = tex2D(_BumpMap, IN.uv_BumpMap).a;
 			//half rainScale = max(0, dot(o.Normal, half3(0, 1, 0)) + 0.5);
-
-			half3 disturbMap = tex2D(_DisturbMap, IN.uv_BumpMap * _DisturbTilling);
-			half3 disturbNor =lerp(o.Normal,o.Normal * disturbMap, _DisturbMapFactor * _OwnRainNormalFactor * c.a);
-
 			//o.Normal = half3(1.0, 1.0, 1.0);
             half refMask =saturate( speCol.a - IN.viewDirRim.y);
             //// we make normal of wet to be flat
             half3 tempNor =lerp(o.Normal,half3(0,0,1),_RefFluseVal);
             o.Normal =lerp(o.Normal,tempNor,refMask);    
+
+			half3 disturbMap = tex2D(_DisturbMap, IN.uv_BumpMap * _DisturbTilling);
+			half3 disturbNor =lerp(o.Normal,o.Normal * disturbMap, _DisturbMapFactor * _OwnRainNormalFactor * c.a);
 
              //50% darker in wet area
             half darkValue =lerp(0.5,1.0,IN.viewDirRim.y);
