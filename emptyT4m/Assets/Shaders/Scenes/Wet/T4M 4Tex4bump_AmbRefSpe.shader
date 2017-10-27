@@ -32,8 +32,10 @@ Properties {
     _WetColor ("Wet Area Color", Color) = (0.2, 0.2,0.2, 1)
     _ReflectVal("Reflect Value",Range(0,1)) = 0.5
     _RefFluseVal("Reflect Distortion",Range(0,1)) =0.8
+	_FogVal ("Fog Density",Range(0,1)) = 1.0
+    _FogHeiDen("Height Fog Density",Range(0,1)) = 0.0
+    _FogHeiScale("Height Fog Adjustment",Float) = 0.0
     [HideInInspector] _ReflectionTex ("Reflection", 2D) = "black" { }
-
 	[HideInInspector]_MainTex ("Never Used", 2D) = "white" {}
 } 
 
@@ -43,6 +45,7 @@ CGINCLUDE
     sampler2D _Splat0,_Splat1,_Splat2,_Splat3;
     fixed4 _ReflectColor,_WetColor;
     fixed _AmbScale,_ReflectVal,_RefLerp,_RefFluseVal,_DisturbMapFactor,_DisturbTilling;
+	fixed _FogVal,_FogHeiDen,_FogHeiParaZ,_FogHeiParaW,_FogHeiScale;
     fixed _ShininessL0;
     fixed _ShininessL1;
     fixed _ShininessL2;
@@ -59,7 +62,7 @@ SubShader {
 		"RenderType" = "Opaque"
 	}
     CGPROGRAM
-    #pragma surface surf BlinnPhong1  vertex:vert exclude_path:deferred  exclude_path:prepass nometa 
+    #pragma surface surf BlinnPhong1  vertex:vert finalcolor:fogColor exclude_path:deferred  exclude_path:prepass nometa 
     #pragma target 3.0
     #include "UnityCG.cginc"
 
@@ -70,22 +73,48 @@ SubShader {
         half2 viewDirRim;
 		float4 screenPos;
 	    float2 uv_Control : TEXCOORD0;
-		float3 worldPos;
         INTERNAL_DATA
+		float2 fogCoord : TEXCOORD5;
     };
 
         void vert (inout appdata_full v,out Input o) {
     
             UNITY_INITIALIZE_OUTPUT(Input,o);
             half3 worldNormal = UnityObjectToWorldNormal(v.normal);
-            o.worldPos = mul(unity_ObjectToWorld, v.vertex).xyz;
-            half3 worldHalfDir = normalize(UnityWorldSpaceViewDir(o.worldPos)  +  _WorldSpaceLightPos0.xyz  );
+            half3 worldPos = mul(unity_ObjectToWorld, v.vertex).xyz;
+            half3 worldHalfDir = normalize(UnityWorldSpaceViewDir(worldPos)  +  _WorldSpaceLightPos0.xyz  );
             o.viewDirRim.x =saturate(1.4f -saturate(dot(worldHalfDir , worldNormal)) );
             o.viewDirRim.y =1-_RefLerp;
 			
-            //#if UNITY_COLORSPACE_GAMMA
-            //o.viewDirRim.y =GammaToLinearSpace(o.viewDirRim.y );
-            //#endif	
+            #if defined(FOG_LINEAR)
+			// factor = (end-z)/(end-start) = z * (-1/(end-start)) + (end/(end-start))
+				float unityFogFactor = (pos.z) * unity_FogParams.z + unity_FogParams.w;
+			#elif defined(FOG_EXP)
+				// factor = exp(-density*z)
+				 float unityFogFactor = unity_FogParams.y * (pos.z); 
+				 unityFogFactor = exp2(-unityFogFactor);
+			#elif defined(FOG_EXP2)
+				// factor = exp(-(density*z)^2)
+				float unityFogFactor = unity_FogParams.x * (pos.z);
+			 	unityFogFactor = exp2(-unityFogFactor*unityFogFactor);
+			#else
+				float unityFogFactor = 1.0;
+			#endif
+	//data.fogCoord .x = unityFogFactor;
+			o.fogCoord.x = saturate(unityFogFactor);
+			o.fogCoord.y =saturate((worldPos.y +_FogHeiScale)  *_FogHeiParaZ +_FogHeiParaW);	
+        }
+
+		void fogColor(Input IN, SurfaceOutput o, inout fixed4 color)
+        {
+            #ifdef UNITY_PASS_FORWARDADD
+                color.rgb = lerp(fixed3(0,0,0), (color).rgb, saturate(IN.fogCoord.x));
+            #else
+		        fixed3 FarFog = lerp(unity_FogColor, color.rgb, IN.fogCoord.x);//Far Fog
+		        fixed3 HeiFog =lerp(unity_FogColor,FarFog,IN.fogCoord.y); //Height Fog
+		        fixed3 tempC =lerp(FarFog,HeiFog,_FogHeiDen);//Height Fog Density
+		        color.rgb = lerp(color.rgb,tempC,_FogVal);
+            #endif
         }
 
         void surf (Input IN, inout SurfaceOutput o) {
@@ -165,39 +194,39 @@ SubShader {
         }
 
     SubShader {
-    Lod 200
-	Tags {
-		"SplatCount" = "4"
-		"Queue" = "Geometry-100"
-		"RenderType" = "Opaque"
+		Lod 200
+		Tags {
+			"SplatCount" = "4"
+			"Queue" = "Geometry-100"
+			"RenderType" = "Opaque"
+		}
+		CGPROGRAM
+		#pragma surface surf Lambert  exclude_path:deferred  exclude_path:prepass nometa noforwardadd novertexlights noambient 
+		#pragma target 3.0
+		#include "UnityCG.cginc"
+
+		struct Input {
+			float2 uv_Control : TEXCOORD0;
+		};
+
+		void surf (Input IN, inout SurfaceOutput o) {
+			half4 splat_control = tex2D (_Control, IN.uv_Control);
+			half3 col;
+			half4 splat0 = tex2D (_Splat0, IN.uv_Control *_Tiling1.xy);
+			half4 splat1 = tex2D (_Splat1, IN.uv_Control *_Tiling1.zw);
+			half4 splat2 = tex2D (_Splat2, IN.uv_Control *_Tiling2.xy);
+			half4 splat3 = tex2D (_Splat3, IN.uv_Control *_Tiling2.zw);
+
+			col  = splat_control.r * splat0.rgb;
+			col += splat_control.g * splat1.rgb;
+			col += splat_control.b * splat2.rgb;
+			col += splat_control.a * splat3.rgb;
+
+			o.Albedo = lerp(col.rgb,col.rgb *UNITY_LIGHTMODEL_AMBIENT,_AmbScale); //mul Amb
+			o.Alpha = 0.0;
+			}
+		ENDCG  
 	}
-    CGPROGRAM
-    #pragma surface surf Lambert  exclude_path:deferred  exclude_path:prepass nometa noforwardadd novertexlights noambient 
-    #pragma target 3.0
-    #include "UnityCG.cginc"
-
-    struct Input {
-	    float2 uv_Control : TEXCOORD0;
-    };
-
-    void surf (Input IN, inout SurfaceOutput o) {
-	    half4 splat_control = tex2D (_Control, IN.uv_Control);
-	    half3 col;
-	    half4 splat0 = tex2D (_Splat0, IN.uv_Control *_Tiling1.xy);
-	    half4 splat1 = tex2D (_Splat1, IN.uv_Control *_Tiling1.zw);
-	    half4 splat2 = tex2D (_Splat2, IN.uv_Control *_Tiling2.xy);
-	    half4 splat3 = tex2D (_Splat3, IN.uv_Control *_Tiling2.zw);
-
-	    col  = splat_control.r * splat0.rgb;
-        col += splat_control.g * splat1.rgb;
-	    col += splat_control.b * splat2.rgb;
-        col += splat_control.a * splat3.rgb;
-
-	    o.Albedo = lerp(col.rgb,col.rgb *UNITY_LIGHTMODEL_AMBIENT,_AmbScale); //mul Amb
-	    o.Alpha = 0.0;
-        }
-    ENDCG  
-    }
 
     FallBack "Mobile/VertexLit"
 }
