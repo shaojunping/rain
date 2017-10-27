@@ -106,6 +106,7 @@
     <Compile Include="Assets\toogleWet.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Assets\KriptoFX\Realistic Effects Pack v4\Shaders\Portal\MyPortalSky 1.shader" />
     <None Include="Assets\Shaders\Scenes\Snow\SceneCommonLOD_Snow.shader" />
     <None Include="Assets\Shaders\Scenes\Wet\SceneCommonLODLight.shader" />
     <None Include="Assets\Shaders\Scenes\Wet\SceneCommonLOD_RealRef.shader" />
@@ -180,6 +181,7 @@
     <None Include="Assets\Standard Assets\Effects\ImageEffects\Shaders\_DepthOfField\SeparableBlur.shader" />
     <None Include="Assets\Standard Assets\Effects\ImageEffects\Shaders\_DepthOfField\SeparableWeightedBlurDof34.shader" />
     <None Include="Assets\Standard Assets\Effects\ImageEffects\Shaders\_DepthOfField\TiltShiftHdrLensBlur.shader" />
+    <None Include="Assets\lineRenderer\ParticleAddTiling.shader" />
     <None Include="Assets\projector\ProjectorLightAdditive.shader" />
     <None Include="Assets\projector\Projector_AlphaBlended.shader" />
   </ItemGroup>
