@@ -345,8 +345,6 @@ namespace TSHD.SwimEffect
             }
         }
 
-        private bool _listVisibility = true;
-
         public void ListIterator(string propertyPath, ref bool visible)
         {
             SerializedProperty listProperty = serializedObject.FindProperty(propertyPath);
