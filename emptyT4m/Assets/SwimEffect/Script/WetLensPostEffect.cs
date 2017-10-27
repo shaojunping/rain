@@ -13,10 +13,6 @@ namespace TSHD.SwimEffect
 
         [HideInInspector]public float _refraction = 0f;
 
-
-        private float _lastFrameTime = 0f;
-
-
         void OnDisable()
         {
             //CancelInvoke("NextFrame");

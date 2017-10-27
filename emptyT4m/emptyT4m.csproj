@@ -71,7 +71,6 @@
   <ItemGroup>
     <Compile Include="Assets\BloomTest.cs" />
     <Compile Include="Assets\ImageEffectsController\ImageEffectsController.cs" />
-    <Compile Include="Assets\KriptoFX\Realistic Effects Pack v4\Scripts\Curves\RFX4_ScaleCurves.cs" />
     <Compile Include="Assets\Scripts\ArtScripts\RotateAndPinch_2.cs" />
     <Compile Include="Assets\Scripts\ArtScripts\UpdateFrame.cs" />
     <Compile Include="Assets\Scripts\ArtScripts\showFPS.cs" />

@@ -51,7 +51,6 @@ namespace TSHD.SwimEffect
         //wetLens
         private WetLensPostEffect _wetLensPostEffect;
         private float _outWaterTime = 1.5f;
-        private float _wetTime = 0f;
         public float _wetLensDryTime = 2f;
         private Texture2D _normalTexture;
         public Texture2D[] _normalTextureArray;
