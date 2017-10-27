@@ -10,7 +10,7 @@ Shader "TSHD/Scene/Wet/SceneCommonLODLight"
 	Properties
 	{
         //_AmbScale ("Ambient Color", Range (0.0, 1)) = 0
-		_MainTex ("Main Texture, A for rain disturb", 2D) = "white" {}
+		_MainTex ("Main Texture", 2D) = "white" {}
 		_MainColor ("Main Color", Color) = (1.0, 1.0, 1.0, 1)
 		_MainColorScale ("Main Color Scale", Range (0.0, 1)) = 0
         _NorFactor("Baked Normal Factor",Range(0, 0.5)) =0.0
