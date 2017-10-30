@@ -41,14 +41,18 @@ public class EnvironmentSetup : MonoBehaviour
     public Texture2D[] rainDisturbTex;
     float countTime;
 
-    // Use this for initialization
-    void OnEnable()
+    private void Start()
     {
         OpenRainDisturb(enableRainDisturb);
         OpenHeightFog(enableFogHeight);
         OpenAmbientEffect(enableAmbient);
         OpenWetEffect(enableWet);
         OpenSnowEffect(enableSnow);
+    }
+    // Use this for initialization
+    void OnEnable()
+    {
+        
     }
 
     //note： if rain effect is opened, it should be updated each frame

@@ -50,7 +50,7 @@ Shader "TGame/Particles/Projector_AlphaBlended"
 				float4 uvFalloff : TEXCOORD1;
 				float4 uvBurn : TEXCOORD2;
 				fixed4 color : COLOR;
-				UNITY_FOG_COORDS(2)
+				UNITY_FOG_COORDS(3)
 				float4 pos : SV_POSITION;
 			};
 			

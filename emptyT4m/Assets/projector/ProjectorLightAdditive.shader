@@ -51,7 +51,7 @@ Shader "TGame/Particles/Projector_Additive"
 				float4 uvFalloff : TEXCOORD1;
 				float4 uvBurn : TEXCOORD2;
 				fixed4 color : COLOR;
-				UNITY_FOG_COORDS(1)
+				UNITY_FOG_COORDS(3)
 				float4 pos : SV_POSITION;
 			};
 			
