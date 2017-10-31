@@ -21,6 +21,7 @@ Shader "TSHD/Scene/Wet/SceneCommonLODLight"
         [NoScaleOffset]_SpecularMap ("SpecularMap(RGB for Specular,A for Refletion Mask)",2D) = "white" {}
         _SpecColor ("Specular Color", Color) = (1.0, 1.0, 1.0, 1)
         _Shininess ("Shininess", Range (0.01, 0.5)) = 0.078125
+		_SpecScale("Specular Scale",Range(0, 2)) = 0.2
         _ReflectVal("Reflect Value",Range(0,1)) = 0.2
         _RefFluseVal("Reflect Distortion",Range(0,1)) = 0.8
         _WetColor ("Wet Area Color", Color) = (0.2, 0.2,0.2, 1)
@@ -48,7 +49,7 @@ Shader "TSHD/Scene/Wet/SceneCommonLODLight"
 		sampler2D _DisturbMap;
         sampler2D _SpecularMap;
 
-        fixed _BumpScale,_AmbScale,_RefFluseVal,_RefLerp, _MainColorScale, _DisturbMapFactor, _OwnRainNormalFactor;
+        fixed _BumpScale,_AmbScale,_RefFluseVal,_RefLerp, _MainColorScale, _SpecScale, _DisturbMapFactor, _OwnRainNormalFactor;
         fixed4 _Color,_WetColor, _MainColor;
         fixed4 _ReflectColor;
         half _Shininess, _DisturbTilling;
@@ -110,7 +111,8 @@ Shader "TSHD/Scene/Wet/SceneCommonLODLight"
             half4 speCol =tex2D(_SpecularMap,IN.uv_MainTex);
             _SpecColor.rgb *=speCol.rgb;
 
-            o.Gloss = _SpecColor.a;
+            //o.Gloss = _SpecColor.a;
+			o.Gloss = _SpecScale;
 	        o.Specular = _Shininess;
 
             o.Normal = UnpackScaleNormal(tex2D(_BumpMap, IN.uv_BumpMap),_BumpScale);
