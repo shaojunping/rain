@@ -21,7 +21,7 @@ Shader "TSHD/Scene/Wet/SceneCommonLODLight"
         [NoScaleOffset]_SpecularMap ("SpecularMap(RGB for Specular,A for Refletion Mask)",2D) = "white" {}
         _SpecColor ("Specular Color", Color) = (1.0, 1.0, 1.0, 1)
         _Shininess ("Shininess", Range (0.01, 0.5)) = 0.078125
-		_SpecScale("Specular Scale",Range(0, 2)) = 0.2
+		_SpecScale("Specular Scale",Range(0, 10)) = 0.2
         _ReflectVal("Reflect Value",Range(0,1)) = 0.2
         _RefFluseVal("Reflect Distortion",Range(0,1)) = 0.8
         _WetColor ("Wet Area Color", Color) = (0.2, 0.2,0.2, 1)
