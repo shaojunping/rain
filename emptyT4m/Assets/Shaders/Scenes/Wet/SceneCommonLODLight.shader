@@ -13,9 +13,9 @@ Shader "TSHD/Scene/Wet/SceneCommonLODLight"
 		_MainTex ("Main Texture", 2D) = "white" {}
 		_MainColor ("Main Color", Color) = (1.0, 1.0, 1.0, 1)
 		_MainColorScale ("Main Color Scale", Range (0.0, 1)) = 0
-        _NorFactor("Baked Normal Factor",Range(0, 0.5)) =0.0
-        _MinShadowInt("Min Shadow Intensity",Range(0, 0.5)) =0.5
-        _BakeLight("_BakeLight XYZ:Direction,W:Intensity",Vector) =(0.2,1,0.2,1.5)
+        _NorFactor("Baked Normal Factor",Range(0, 1.0)) = 0.0
+        _MinShadowInt("Min Shadow Intensity",Range(0, 1.0)) = 0.5
+        _BakeLight("_BakeLight XYZ:Direction,W:Intensity",Vector) = (0.2,1,0.2,1.5)
         _BumpScale("Bump Scale", Float) = 1.0
         _BumpMap ("Normalmap", 2D) = "bump" {}
         [NoScaleOffset]_SpecularMap ("SpecularMap(RGB for Specular,A for Refletion Mask)",2D) = "white" {}

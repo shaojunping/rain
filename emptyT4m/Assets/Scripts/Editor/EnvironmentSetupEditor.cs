@@ -154,9 +154,7 @@ public class HeightFogEditor : CustomEditorBase
           serObj.ApplyModifiedProperties();
         if (EditorGUI.EndChangeCheck())
         {
-            float FogHeiParaZ = 1 / (cls.FogHeightEnd - cls.FogHeightStart);
-            float FogHeiParaW = -cls.FogHeightStart / (cls.FogHeightEnd - cls.FogHeightStart);
-            cls.SetHeightFog(FogHeiParaZ, FogHeiParaW);
+            cls.SetHeightFog(cls.FogHeightEnd, cls.FogHeightStart);
             cls.OpenHeightFog(cls.enableFogHeight);
             cls.OpenAmbientEffect(cls.enableAmbient);
             cls.OpenRainDisturb(cls.enableRainDisturb);

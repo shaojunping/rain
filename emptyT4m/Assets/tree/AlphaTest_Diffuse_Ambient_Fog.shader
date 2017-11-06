@@ -14,12 +14,12 @@ SubShader {
 	LOD 200
 	
 CGPROGRAM
-#pragma surface surf Lambert alphatest:_Cutoff finalcolor:fogColor
+#pragma surface surf Lambert vertex:vert alphatest:_Cutoff finalcolor:fogColor
 
 sampler2D _MainTex;
 fixed4 _Color;
 half  _AmbScale;
-fixed _FogVal,_FogHeiDen,_FogHeiParaZ,_FogHeiParaW,_FogHeiScale;
+fixed _FogVal, _FogHeiDen, _FogHeiParaZ, _FogHeiParaW, _FogHeiScale;
 
 struct Input {
 	float2 uv_MainTex;
@@ -29,6 +29,7 @@ struct Input {
 void vert (inout appdata_full v,out Input o) {
     UNITY_INITIALIZE_OUTPUT(Input,o);
 	float3 worldPos = mul(unity_ObjectToWorld, v.vertex).xyz;
+	float4 pos = mul (UNITY_MATRIX_MVP, v.vertex);
     #if defined(FOG_LINEAR)
 	// factor = (end-z)/(end-start) = z * (-1/(end-start)) + (end/(end-start))
 		float unityFogFactor = (pos.z) * unity_FogParams.z + unity_FogParams.w;
@@ -45,7 +46,7 @@ void vert (inout appdata_full v,out Input o) {
 	#endif
 //data.fogCoord .x = unityFogFactor;
 	o.fogCoord.x = saturate(unityFogFactor);
-	o.fogCoord.y =saturate((worldPos.y +_FogHeiScale)  *_FogHeiParaZ +_FogHeiParaW);
+	o.fogCoord.y =saturate((worldPos.y +_FogHeiScale)  * _FogHeiParaZ + _FogHeiParaW);
 }
 
 void fogColor(Input IN, SurfaceOutput o, inout fixed4 color)

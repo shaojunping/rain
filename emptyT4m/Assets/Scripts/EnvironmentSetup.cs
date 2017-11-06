@@ -16,6 +16,7 @@ public class EnvironmentSetup : MonoBehaviour
     //ambient
     //if true,amb will be controlled by weather completely!
     public bool enableAmbient = true;
+    private Color ambientSrcColor;
 
     [Range(0.0f, 1.0f)]
     public float ambientEffectScale = 0.5f;
@@ -43,16 +44,17 @@ public class EnvironmentSetup : MonoBehaviour
 
     private void Start()
     {
+    }
+
+    // Use this for initialization
+    void OnEnable()
+    {
+        ambientSrcColor = RenderSettings.ambientSkyColor;
         OpenRainDisturb(enableRainDisturb);
         OpenHeightFog(enableFogHeight);
         OpenAmbientEffect(enableAmbient);
         OpenWetEffect(enableWet);
         OpenSnowEffect(enableSnow);
-    }
-    // Use this for initialization
-    void OnEnable()
-    {
-        
     }
 
     //note： if rain effect is opened, it should be updated each frame
@@ -61,59 +63,59 @@ public class EnvironmentSetup : MonoBehaviour
         UpdateRainDisturb();
     }
 
-    void OnGUI()
-    {
-        if (GUI.Button(new Rect(150, 100, 200, 20), "开启下雨"))
-        {
-            OpenRainDisturb(true);
-            Debug.Log("开启下雨");
-        }
-        if (GUI.Button(new Rect(350, 100, 200, 20), "关闭下雨"))
-        {
-            OpenRainDisturb(false);
-            Debug.Log("关闭下雨");
-        }
-        if (GUI.Button(new Rect(150, 200, 200, 20), "开启高度雾"))
-        {
-            OpenHeightFog(true);
-            Debug.Log("开启高度雾");
-        }
-        if (GUI.Button(new Rect(350, 200, 200, 20), "关闭高度雾"))
-        {
-            OpenHeightFog(false);
-            Debug.Log("关闭高度雾");
-        }
-        if (GUI.Button(new Rect(150, 300, 200, 20), "开启环境光"))
-        {
-            OpenAmbientEffect(true);
-            Debug.Log("开启环境光");
-        }
-        if (GUI.Button(new Rect(350, 300, 200, 20), "关闭环境光"))
-        {
-            OpenAmbientEffect(false);
-            Debug.Log("关闭环境光");
-        }
-        if (GUI.Button(new Rect(150, 400, 200, 20), "开启wet"))
-        {
-            OpenWetEffect(true);
-            Debug.Log("开启wet");
-        }
-        if (GUI.Button(new Rect(350, 400, 200, 20), "关闭wet"))
-        {
-            OpenWetEffect(false);
-            Debug.Log("关闭wet");
-        }
-        if (GUI.Button(new Rect(150, 500, 200, 20), "开启snow"))
-        {
-            OpenSnowEffect(true);
-            Debug.Log("开启snow");
-        }
-        if (GUI.Button(new Rect(350, 500, 200, 20), "关闭snow"))
-        {
-            OpenSnowEffect(false);
-            Debug.Log("关闭snow");
-        }
-    }
+    //void OnGUI()
+    //{
+    //    if (GUI.Button(new Rect(150, 100, 200, 20), "开启下雨"))
+    //    {
+    //        OpenRainDisturb(true);
+    //        Debug.Log("开启下雨");
+    //    }
+    //    if (GUI.Button(new Rect(350, 100, 200, 20), "关闭下雨"))
+    //    {
+    //        OpenRainDisturb(false);
+    //        Debug.Log("关闭下雨");
+    //    }
+    //    if (GUI.Button(new Rect(150, 200, 200, 20), "开启高度雾"))
+    //    {
+    //        OpenHeightFog(true);
+    //        Debug.Log("开启高度雾");
+    //    }
+    //    if (GUI.Button(new Rect(350, 200, 200, 20), "关闭高度雾"))
+    //    {
+    //        OpenHeightFog(false);
+    //        Debug.Log("关闭高度雾");
+    //    }
+    //    if (GUI.Button(new Rect(150, 300, 200, 20), "开启环境光"))
+    //    {
+    //        OpenAmbientEffect(true);
+    //        Debug.Log("开启环境光");
+    //    }
+    //    if (GUI.Button(new Rect(350, 300, 200, 20), "关闭环境光"))
+    //    {
+    //        OpenAmbientEffect(false);
+    //        Debug.Log("关闭环境光");
+    //    }
+    //    if (GUI.Button(new Rect(150, 400, 200, 20), "开启wet"))
+    //    {
+    //        OpenWetEffect(true);
+    //        Debug.Log("开启wet");
+    //    }
+    //    if (GUI.Button(new Rect(350, 400, 200, 20), "关闭wet"))
+    //    {
+    //        OpenWetEffect(false);
+    //        Debug.Log("关闭wet");
+    //    }
+    //    if (GUI.Button(new Rect(150, 500, 200, 20), "开启snow"))
+    //    {
+    //        OpenSnowEffect(true);
+    //        Debug.Log("开启snow");
+    //    }
+    //    if (GUI.Button(new Rect(350, 500, 200, 20), "关闭snow"))
+    //    {
+    //        OpenSnowEffect(false);
+    //        Debug.Log("关闭snow");
+    //    }
+    //}
 
     #region heightFog
     public void OpenHeightFog(bool open)
@@ -131,10 +133,10 @@ public class EnvironmentSetup : MonoBehaviour
         }
     }
 
-    public void SetHeightFog(float fFogHeiParaZ = 0.0f, float fFogHeiParaW = 0.0f)
+    public void SetHeightFog(float fFogHeightEnd = 0.0f, float fFogHeightStart = 0.0f)
     {
-        FogHeiParaW = fFogHeiParaW;
-        FogHeiParaZ = fFogHeiParaZ;
+        float FogHeiParaZ = 1 / (fFogHeightEnd - fFogHeightStart);
+        float FogHeiParaW = -FogHeightStart / (FogHeightEnd - FogHeightStart);
     }
     #endregion
 
@@ -150,6 +152,7 @@ public class EnvironmentSetup : MonoBehaviour
         else
         {
             Shader.SetGlobalFloat("_AmbScale", 0.0f);
+            RenderSettings.ambientSkyColor = ambientSrcColor;
         }
     }
     #endregion
