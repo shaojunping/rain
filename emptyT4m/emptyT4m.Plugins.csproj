@@ -106,6 +106,7 @@
     <None Include="Assets\KriptoFX\Realistic Effects Pack v4\Materials\Effect5\stencilMask.shader" />
     <None Include="Assets\KriptoFX\Realistic Effects Pack v4\Shaders\Portal\MyPortalSky 1.shader" />
     <None Include="Assets\KriptoFX\Realistic Effects Pack v4\Shaders\Portal\MyPortalSkyStencil.shader" />
+    <None Include="Assets\Plugins\UGE\Resources\UGE\Shaders\Effect\BillBoard_Blend_LocalZ.shader" />
     <None Include="Assets\Shaders\Scenes\Snow\SceneCommonLOD_Snow.shader" />
     <None Include="Assets\Shaders\Scenes\Wet\SceneCommonLODLight.shader" />
     <None Include="Assets\Shaders\Scenes\Wet\SceneCommonLOD_RealRef.shader" />
