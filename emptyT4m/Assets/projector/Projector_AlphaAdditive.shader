@@ -3,7 +3,9 @@
 // Upgrade NOTE: replaced '_Projector' with 'unity_Projector'
 // Upgrade NOTE: replaced '_ProjectorClip' with 'unity_ProjectorClip'
 
-Shader "TGame/Projector/Projector_AlphaBlended" 
+
+
+Shader "TGame/Projector/Projector_Additive" 
 {
 	Properties 
 	{
@@ -19,8 +21,8 @@ Shader "TGame/Projector/Projector_AlphaBlended"
 
 		_BurnFirstColor("Burn First Color", Color) = (1, 0, 0, 1)
 		_BurnSecondColor("Burn Second Color", Color) = (1, 0, 0, 1)
-		_Multipiler ("Multipiler",Range(0, 10)) = 1
-
+		_Multipiler ("Multipiler",Range(0,5)) = 1
+		
 		_XOffset("Horizontal Offset", float) = 0.01
 		_YOffset("Vertical Offset", float) = 0.01
 	}
@@ -28,12 +30,11 @@ Shader "TGame/Projector/Projector_AlphaBlended"
 	Subshader {
 		Tags {"Queue"="Transparent" "IgnoreProjector"="True" "RenderType"="Transparent" "PreviewType"="Plane" }
 		Pass {
-			Cull Off Lighting Off ZWrite Off
+			Blend SrcAlpha One
 			ColorMask RGB
-			
+			Cull Off Lighting Off ZWrite Off
 			Offset -1, -1
-			Blend SrcAlpha OneMinusSrcAlpha
-
+	
 			CGPROGRAM
 			#pragma vertex vert
 			#pragma fragment frag
@@ -42,8 +43,8 @@ Shader "TGame/Projector/Projector_AlphaBlended"
 			
 			struct a2v {
 				float4 vertex : POSITION;
-				float4 texcoord : TEXCOORD0;
 				fixed4 color : COLOR;
+				float4 texcoord : TEXCOORD0;
 			};
 
 			struct v2f {
@@ -69,7 +70,7 @@ Shader "TGame/Projector/Projector_AlphaBlended"
 			fixed4 _BurnFirstColor;
 			fixed4 _BurnSecondColor;
 			fixed _Multipiler;
-			
+
 			fixed4 _MainColor;
 			sampler2D _ShadowTex;
 			sampler2D _FalloffTex;
@@ -92,22 +93,22 @@ Shader "TGame/Projector/Projector_AlphaBlended"
 			{
 				fixed2 offset = fixed2(_XOffset, _YOffset);
 				fixed4 burnColor = tex2Dproj (_BurnTex, UNITY_PROJ_COORD(i.uvBurn));
-				
 				clip(burnColor.r - _BurnAmount);
+
 				fixed4 uvShadow = UNITY_PROJ_COORD(i.uvShadow);
 				fixed2 uv = uvShadow.xy / uvShadow.w;
 				uv += offset;
-				
+
 				fixed4 texS = tex2D(_ShadowTex, uv);
 				texS.rgb *= _MainColor.rgb;
 				
 				fixed t = 1 - smoothstep(0.0, _LineWidth, burnColor.r - _BurnAmount);
 				fixed3 color = lerp(_BurnFirstColor, _BurnSecondColor, t);
 				color = pow(color, 5);
-				color *= burnColor.a * burnColor.a;
+				color *= texS.a * burnColor.a;
 
 				fixed4 texF = tex2Dproj (_FalloffTex, UNITY_PROJ_COORD(i.uvFalloff));
-				fixed4 res = 2.0 * i.color * texS  * texF.a * _Multipiler;
+				fixed4 res = 2.0 * i.color * texS * texF.a * _Multipiler;
 
 				UNITY_APPLY_FOG_COLOR(i.fogCoord, res, fixed4(0,0,0,0));
 				fixed3 finalColor = lerp(res.rgb, color, t * step(0.0001, _BurnAmount));

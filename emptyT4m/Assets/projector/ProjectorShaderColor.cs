@@ -1,32 +1,37 @@
-using UnityEngine;
+﻿using UnityEngine;
 using System.Collections;
 
-
-public enum ProjectorShaderProperties
+public enum ProjectorShaderColorProperties
 {
-    _MainAlpha,
-    _BurnAmount,
-    _XOffset,
-    _YOffset
+    _MainColor
 };
 
+public class ProjectorShaderColor : MonoBehaviour {
+    public ProjectorShaderColorProperties m_colorProperty = ProjectorShaderColorProperties._MainColor;
+    public Gradient m_mainColorGradient = new Gradient()
+    {
+        colorKeys = new GradientColorKey[]
+        {
+                new GradientColorKey(new Color(1f, .639f, .482f, 1f), 0f),
+                new GradientColorKey(new Color(1f, .725f, .482f, 1f), .10f),
+                new GradientColorKey(new Color(1f, .851f, .722f, 1f), .50f),
+                new GradientColorKey(new Color(1f, .725f, .482f, 1f), .90f),
+                new GradientColorKey(new Color(1f, .639f, .482f, 1f), 1f)
+        }
+    }
+    ;
 
-public class ProjectorShaderFloatCurve : MonoBehaviour {
-
-    public ProjectorShaderProperties m_projectorFloatProperty = ProjectorShaderProperties._BurnAmount;
-    public AnimationCurve m_floatCurve = AnimationCurve.EaseInOut(0, -1, 1, 1);
     public float m_graphTimeMultiplier = 6;
-    public float m_graphIntensityMultiplier = 1;
     public bool m_isLoop = false;
-    public bool m_useSharedMaterial = true;
+    public bool m_useSharedMaterial = false;
 
     private bool m_canUpdate;
     private float m_startTime;
     private Material m_mat;
-    private float m_startFloat;
-    private int m_propertyID;
     private string m_shaderProperty;
+    private int m_propertyID;
     private bool m_isInitialized;
+    private Color m_startColor;
 
     private void Awake()
     {
@@ -54,11 +59,11 @@ public class ProjectorShaderFloatCurve : MonoBehaviour {
             else m_mat = rend.sharedMaterial;
         }
 
-        m_shaderProperty = m_projectorFloatProperty.ToString();
+        m_shaderProperty = m_colorProperty.ToString();
         if (m_mat.HasProperty(m_shaderProperty)) m_propertyID = Shader.PropertyToID(m_shaderProperty);
-        m_startFloat = m_mat.GetFloat(m_propertyID);
-        var eval = m_floatCurve.Evaluate(0) * m_graphIntensityMultiplier;
-        m_mat.SetFloat(m_propertyID, eval);
+        m_startColor = m_mat.GetColor(m_propertyID);
+        var eval = m_mainColorGradient.Evaluate(0);
+        m_mat.SetColor(m_propertyID, eval);
         m_isInitialized = true;
     }
 
@@ -68,18 +73,23 @@ public class ProjectorShaderFloatCurve : MonoBehaviour {
         m_canUpdate = true;
         if (!m_isInitialized)
         {
-            var eval = m_floatCurve.Evaluate(0)* m_graphIntensityMultiplier;
-            m_mat.SetFloat(m_propertyID, eval);
+            var eval = m_mainColorGradient.Evaluate(0);
+            m_mat.SetColor(m_propertyID, eval);
         }
     }
 
-    private void Update()
-    {
+    // Use this for initialization
+    void Start () {
+	    
+	}
+	
+	// Update is called once per frame
+	void Update () {
         var time = Time.time - m_startTime;
         if (m_canUpdate)
         {
-            var eval = m_floatCurve.Evaluate(time / m_graphTimeMultiplier) * m_graphIntensityMultiplier;
-            m_mat.SetFloat(m_propertyID, eval);
+            var eval = m_mainColorGradient.Evaluate(time / m_graphTimeMultiplier);
+            m_mat.SetColor(m_propertyID, eval);
         }
         if (time >= m_graphTimeMultiplier)
         {
@@ -87,21 +97,13 @@ public class ProjectorShaderFloatCurve : MonoBehaviour {
             else m_canUpdate = false;
         }
     }
-   
+
     void OnDisable()
     {
-        if (m_mat == null)
-            return;
-        if(m_useSharedMaterial) m_mat.SetFloat(m_propertyID, m_startFloat);
-    }
-
-    void OnDestroy()
-    {
-        if (!m_useSharedMaterial)
+        if(m_mat == null)
         {
-            if (m_mat != null)
-                DestroyImmediate(m_mat);
-            m_mat = null;
+            return;
         }
+        m_mat.SetColor(m_propertyID, m_startColor);
     }
 }
